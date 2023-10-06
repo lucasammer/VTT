@@ -1,19 +1,30 @@
-#include <sys/ioctl.h>
-#include <unistd.h>
 #include <iostream>
 #include <fstream>
 #include <cstring>
 #include <CImg.h>
 using namespace cimg_library;
 
+#ifdef _WIN32
+#include <windows.h>
+#else
+#include <sys/ioctl.h>
+#include <unistd.h>
+#endif
+
 int main(int argc, char **argv)
 {
+#ifndef _WIN32
     struct winsize w;
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
 
     int AVAIL_ROWS = w.ws_row - 1;
     int AVAIL_COLUMNS = w.ws_col;
-
+#else
+    CONSOLE_SCREEN_BUFFER_INFO csbi;
+    GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+    int AVAIL_ROWS = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
+    int AVAIL_COLUMNS = csbi.srWindow.Right - csbi.srWindow.Left + 1;
+#endif
     if (argc < 2)
     {
         std::cout << "Usage: " << argv[0] << " <input_image_path> [output_file_path (optional)] [channel to use for grayscale]" << std::endl;
