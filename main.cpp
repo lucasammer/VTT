@@ -58,7 +58,6 @@ int main(int argc, char **argv)
         for (int c = 0; c < width; c++)
         {
             pixels[r * width + c] = (int)image(c, r, 0, 0);
-            std::cout << (int)image(c, r, 0, 0) << std::endl;
         }
     }
 
@@ -68,17 +67,17 @@ int main(int argc, char **argv)
     {
         int currentPixel = pixels[i] + 1;
         // We divide by the ammount of characters in the charMap then floor it
-        float value = currentPixel / 8;
+        float value = currentPixel / 32;
         int finalValue = floor(value);
 
         textPixels[i] = charMap[finalValue];
     }
 
     // Showing the charmapped pixels
-    for (int i = 0; i < pixelCount; i++)
+    for (int i = 1; i < pixelCount; i++)
     {
-        std::cout << textPixels[i];
-        if (i == width)
+        std::cout << textPixels[i - 1]; // - 1 because we start at one so that we dont devide by 0 below
+        if (i % width == 0)
             std::cout << std::endl;
     }
 
