@@ -11,7 +11,7 @@ int main(int argc, char **argv)
     struct winsize w;
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
 
-    int AVAIL_ROWS = w.ws_row;
+    int AVAIL_ROWS = w.ws_row - 1;
     int AVAIL_COLUMNS = w.ws_col;
 
     if (argc < 2)
@@ -52,6 +52,7 @@ int main(int argc, char **argv)
     int pixelCount = width * height;
     int *pixels = new int[pixelCount];
     std::cout << width << "x" << height << std::endl;
+    // Getting each pixels value
     for (int r = 0; r < height; r++)
     {
         for (int c = 0; c < width; c++)
@@ -60,6 +61,28 @@ int main(int argc, char **argv)
             std::cout << (int)image(c, r, 0, 0) << std::endl;
         }
     }
+
+    // Getting each pixels value but then from the charmap
+    char *textPixels = new char[pixelCount];
+    for (int i = 0; i < pixelCount; i++)
+    {
+        int currentPixel = pixels[i] + 1;
+        // We divide by the ammount of characters in the charMap then floor it
+        float value = currentPixel / 8;
+        int finalValue = floor(value);
+
+        textPixels[i] = charMap[finalValue];
+    }
+
+    // Showing the charmapped pixels
+    for (int i = 0; i < pixelCount; i++)
+    {
+        std::cout << textPixels[i];
+        if (i == width)
+            std::cout << std::endl;
+    }
+
+    std::cout << std::endl;
 
     if (argc >= 3)
     {
@@ -76,6 +99,7 @@ int main(int argc, char **argv)
     }
 
     delete[] pixels;
+    delete[] textPixels;
 
     return 0;
 }
